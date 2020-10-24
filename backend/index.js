@@ -10,6 +10,7 @@ const resolvers = require("./graphql/resolvers/index");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => ({ req }), // we need to forward the request so we can later extract info about all request that get to the server
 });
 
 const uriDB =
