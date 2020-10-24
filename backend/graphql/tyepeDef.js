@@ -7,11 +7,25 @@ const gql = require("graphql-tag");
 // se describen los resolvers para cada mutation
 
 module.exports = gql`
+  type Comment {
+    id: ID!
+    createdAt: String!
+    username: String!
+    body: String!
+  }
+
+  type Like {
+    id: ID!
+    createdAt: String!
+    username: String!
+  }
   type Post {
     id: ID!
     body: String!
     createdAt: String!
     username: String!
+    comments: [Comment]
+    likes: [Like]!
   }
 
   type User {
@@ -39,5 +53,8 @@ module.exports = gql`
     login(username: String!, password: String!): User!
     createPost(body: String!): Post!
     deletePost(postId: ID!): String!
+    createComment(postId: String!, body: String!): Post!
+    deleteComment(postId: ID!, commentId: ID!): Post!
+    likePost(postId: ID!): Post!
   }
 `;

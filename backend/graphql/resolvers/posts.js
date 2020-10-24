@@ -1,5 +1,6 @@
-const { AuthenticationError } = require("apollo-server");
+const { AuthenticationError, UserInputError } = require("apollo-server");
 const Post = require("../../models/Post");
+const User = require("../../models/User");
 const isAuth = require("../../Utils/checkAuth");
 
 module.exports = {
@@ -30,7 +31,10 @@ module.exports = {
     createPost: async (_, { body }, context) => {
       // dentro del context se encuentre la informacion del request object, like the headers
       const user = isAuth(context);
-      console.log(user);
+
+      if (body.trim() === "") {
+        throw new UserInputError("The post body must bot be empty");
+      }
 
       try {
         const newPost = new Post({
@@ -59,6 +63,36 @@ module.exports = {
       } catch (err) {
         throw new Error(err);
       }
+    },
+    likePost: async (_, { postId }, context) => {
+      const { username } = isAuth(context);
+
+      try {
+        const post = await Post.findById(postId);
+        if (post) {
+          const currentLike = post.likes.find(
+            (like) => like.username === username
+          );
+
+          if (currentLike) {
+            // already liked
+            post.likes = post.likes.filter(
+              (like) => like.username !== username
+            );
+          } else {
+            // yet not liked
+            post.likes.push({
+              username,
+              createdAt: new Date().toISOString,
+            });
+          }
+
+          await post.save();
+          return post;
+        } else {
+          throw new UserInputError("Post not found");
+        }
+      } catch (error) {}
     },
   },
 };
