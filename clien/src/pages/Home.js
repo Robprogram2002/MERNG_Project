@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
 import { Grid } from "semantic-ui-react";
 import { AuthContext } from "../context/auth";
 import PostCard from "../layouts/PostCard";
 import PostForm from "../layouts/PostForm";
+import { Fetch_POST_QUERY } from "../util/graphql";
 
 const Home = React.memo(() => {
-  const auth_comtext = useContext(AuthContext);
+  const auth_context = useContext(AuthContext);
 
   const { loading, data } = useQuery(Fetch_POST_QUERY);
   if (loading) {
@@ -20,7 +20,7 @@ const Home = React.memo(() => {
           <h1>Recent Posts</h1>
         </Grid.Row>
         <Grid.Row>
-          {auth_comtext.user && (
+          {auth_context.user && (
             <Grid.Column>
               <PostForm />
             </Grid.Column>
@@ -41,25 +41,5 @@ const Home = React.memo(() => {
     );
   }
 });
-
-const Fetch_POST_QUERY = gql`
-  {
-    getPosts {
-      id
-      body
-      createdAt
-      username
-      likes {
-        username
-      }
-      comments {
-        id
-        username
-        createdAt
-        body
-      }
-    }
-  }
-`;
 
 export default Home;
