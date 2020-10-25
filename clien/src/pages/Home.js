@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { Grid } from "semantic-ui-react";
-
+import { AuthContext } from "../context/auth";
 import PostCard from "../layouts/PostCard";
+import PostForm from "../layouts/PostForm";
 
 const Home = React.memo(() => {
+  const auth_comtext = useContext(AuthContext);
+
   const { loading, data } = useQuery(Fetch_POST_QUERY);
   if (loading) {
     return <h1>Cargando los datos ....</h1>;
@@ -17,6 +20,12 @@ const Home = React.memo(() => {
           <h1>Recent Posts</h1>
         </Grid.Row>
         <Grid.Row>
+          {auth_comtext.user && (
+            <Grid.Column>
+              <PostForm />
+            </Grid.Column>
+          )}
+
           {loading ? (
             <h1>Loading posts..</h1>
           ) : (
